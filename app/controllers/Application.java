@@ -37,24 +37,21 @@ public class Application extends Controller {
         JsonNode json = request().body().asJson();
         Iterator<JsonNode> registrationIDs = json.get(REGISTRATION_IDS).elements();
 
-        // Iterate through array to populate Map with Boolean value which indicates Error status
+        // Iterate through array to generate results JSON array
         // Error is determied by ERROR_RATE %tage
         // Currently NotRegistered is only supported
         int error = 0, success = 0;
         ArrayNode results = Json.newArray();
 
-        HashMap<String, Boolean> registrationIDMap = new HashMap<String, Boolean>();
         while (registrationIDs.hasNext()) {
             registrationIDs.next().asText();
             ObjectNode element = Json.newObject();
             double d = Math.random();
             if (d < ERROR_RATE) {
                 element.put(ERROR, NOT_REGISTERED);
-                //registrationIDMap.put(registId, Boolean.FALSE);
                 error++;
             } else {
                 element.put(MESSAGE_ID, "1:"+random.nextInt(9999));
-                //registrationIDMap.put(registId, Boolean.TRUE);
                 success++;
             }
             results.add(element);
@@ -66,7 +63,7 @@ public class Application extends Controller {
                 .put(SUCCESS, success)
                 .put(FAILURE, error)
                 .put(CANONOCAIL_IDS, 0)
-                .put(RESULTS, results);
+                .set(RESULTS, results);
 
         return ok(response);
     }
